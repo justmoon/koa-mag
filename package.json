@@ -1,8 +1,8 @@
 {
-  "name": "koa-logger",
-  "description": "Logging middleware for koa",
-  "repository": "koajs/logger",
-  "version": "1.2.2",
+  "name": "koa-mag",
+  "description": "Logging middleware for koa using mag",
+  "repository": "justmoon/koa-mag",
+  "version": "1.0.0",
   "keywords": [
     "koa",
     "middleware",
