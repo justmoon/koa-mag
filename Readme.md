@@ -1,7 +1,7 @@
 
 # koa-logger
 
- Development style logger middleware for koa.
+ Development style logger middleware for koa using [mag](https://github.com/mahnunchik/mag).
 
 ```
 <-- GET /
@@ -17,13 +17,13 @@
 ## Installation
 
 ```js
-$ npm install koa-logger
+$ npm install koa-mag
 ```
 
 ## Example
 
 ```js
-var logger = require('koa-logger')
+var logger = require('koa-mag')
 var koa = require('koa')
 
 var app = koa()
