@@ -20,7 +20,9 @@
   "dependencies": {
     "bytes": "1",
     "humanize-number": "~0.0.1",
-    "mag": "^0.9.1",
     "passthrough-counter": "~0.0.1"
+  },
+  "peerDependencies": {
+    "mag": "*"
   }
 }
