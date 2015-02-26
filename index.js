@@ -36,7 +36,7 @@ var colors = {
  */
 
 function dev(opts) {
-  return function *log(next) {
+  return function *logMiddleware(next) {
     // request
     var start = new Date;
     logger.info('  \x1B[90m<-- \x1B[;1m%s\x1B[0;90m %s\x1B[0m', this.method, this.url);
