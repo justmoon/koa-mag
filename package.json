@@ -2,7 +2,7 @@
   "name": "koa-mag",
   "description": "Logging middleware for koa using mag",
   "repository": "justmoon/koa-mag",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "keywords": [
     "koa",
     "middleware",
