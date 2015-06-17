@@ -30,6 +30,10 @@ var app = koa()
 app.use(logger())
 ```
 
+## Options
+
+* `mag` - Provide your own instance of mag. Not generally needed, but useful in some circumstances to fix inheritance issues.
+
 ## Notes
 
   Recommended that you `.use()` this middleware near the top

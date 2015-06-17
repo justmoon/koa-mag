@@ -5,7 +5,6 @@
 var Counter = require('passthrough-counter');
 var humanize = require('humanize-number');
 var bytes = require('bytes');
-var logger = require('mag')('koa');
 
 /**
  * TTY check for dev format.
@@ -36,6 +35,44 @@ var colors = {
  */
 
 function dev(opts) {
+  opts = opts || {};
+  const logger = opts.mag || require('mag')('koa');
+
+  /**
+   * Log helper.
+   */
+  function log(ctx, start, len, err, event) {
+    // get the status code of the response
+    var status = err
+      ? (err.status || 500)
+      : (ctx.status || 404);
+
+    // set the color of the status code;
+    var s = status / 100 | 0;
+    var c = colors[s];
+
+    // get the human readable response length
+    var length;
+    if (~[204, 205, 304].indexOf(status)) {
+      length = '';
+    } else if (null == len) {
+      length = '-';
+    } else {
+      length = bytes(len);
+    }
+
+    var upstream = err ? '\x1B[31mxxx'
+      : event === 'close' ? '\x1B[33m-x-'
+      : '\x1B[90m-->';
+
+    logger.info('  ' + upstream + ' \x1B[;1m%s\x1B[0;90m %s \x1B[' + c + 'm%s\x1B[90m %s %s\x1B[0m',
+      ctx.method,
+      ctx.originalUrl,
+      status,
+      time(start),
+      length);
+  }
+
   return function *logMiddleware(next) {
     // request
     var start = new Date;
@@ -78,42 +115,6 @@ function dev(opts) {
       log(ctx, start, counter ? counter.length : length, null, event);
     }
   }
-}
-
-/**
- * Log helper.
- */
-
-function log(ctx, start, len, err, event) {
-  // get the status code of the response
-  var status = err
-    ? (err.status || 500)
-    : (ctx.status || 404);
-
-  // set the color of the status code;
-  var s = status / 100 | 0;
-  var c = colors[s];
-
-  // get the human readable response length
-  var length;
-  if (~[204, 205, 304].indexOf(status)) {
-    length = '';
-  } else if (null == len) {
-    length = '-';
-  } else {
-    length = bytes(len);
-  }
-
-  var upstream = err ? '\x1B[31mxxx'
-    : event === 'close' ? '\x1B[33m-x-'
-    : '\x1B[90m-->';
-
-  logger.info('  ' + upstream + ' \x1B[;1m%s\x1B[0;90m %s \x1B[' + c + 'm%s\x1B[90m %s %s\x1B[0m',
-    ctx.method,
-    ctx.originalUrl,
-    status,
-    time(start),
-    length);
 }
 
 /**
