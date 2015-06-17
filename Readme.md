@@ -1,5 +1,5 @@
 
-# koa-logger
+# koa-mag
 
  Development style logger middleware for koa using [mag](https://github.com/mahnunchik/mag).
 
