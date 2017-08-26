@@ -2,21 +2,21 @@
  * Module dependencies.
  */
 
-var Counter = require('passthrough-counter');
-var humanize = require('humanize-number');
-var bytes = require('bytes');
+const Counter = require('passthrough-counter')
+const humanize = require('humanize-number')
+const bytes = require('bytes')
 
 /**
  * TTY check for dev format.
  */
 
-var isatty = process.stdout.isTTY;
+const isatty = process.stdout.isTTY
 
 /**
  * Expose logger.
  */
 
-module.exports = dev;
+module.exports = dev
 
 /**
  * Color map.
@@ -28,15 +28,15 @@ var colors = {
   3: 36,
   2: 32,
   1: 32
-};
+}
 
 /**
  * Development logger.
  */
 
-function dev(opts) {
-  opts = opts || {};
-  const logger = opts.mag || require('mag')('koa');
+function dev (opts) {
+  opts = opts || {}
+  const logger = opts.mag || require('mag')('koa')
 
   /**
    * Log helper.
@@ -45,74 +45,73 @@ function dev(opts) {
     // get the status code of the response
     var status = err
       ? (err.status || 500)
-      : (ctx.status || 404);
+      : (ctx.status || 404)
 
-    // set the color of the status code;
-    var s = status / 100 | 0;
-    var c = colors[s];
+    // set the color of the status code
+    var s = status / 100 | 0
+    var c = colors[s]
 
     // get the human readable response length
     var length;
     if (~[204, 205, 304].indexOf(status)) {
-      length = '';
+      length = ''
     } else if (null == len) {
-      length = '-';
+      length = '-'
     } else {
-      length = bytes(len);
+      length = bytes(len)
     }
 
     var upstream = err ? '\x1B[31mxxx'
       : event === 'close' ? '\x1B[33m-x-'
-      : '\x1B[90m-->';
+      : '\x1B[90m-->'
 
     logger.info('  ' + upstream + ' \x1B[;1m%s\x1B[0;90m %s \x1B[' + c + 'm%s\x1B[90m %s %s\x1B[0m',
       ctx.method,
       ctx.originalUrl,
       status,
       time(start),
-      length);
+      length)
   }
 
-  return function *logMiddleware(next) {
+  return async function logMiddleware(ctx, next) {
     // request
-    var start = new Date;
-    logger.info('  \x1B[90m<-- \x1B[;1m%s\x1B[0;90m %s\x1B[0m', this.method, this.url);
+    var start = new Date
+    logger.info('  \x1B[90m<-- \x1B[;1m%s\x1B[0;90m %s\x1B[0m', ctx.method, ctx.url)
 
     try {
-      yield next;
+      await next()
     } catch (err) {
       // log uncaught downstream errors
-      log(this, start, null, err);
-      throw err;
+      log(ctx, start, null, err)
+      throw err
     }
 
     // calculate the length of a streaming response
     // by intercepting the stream with a counter.
     // only necessary if a content-length header is currently not set.
-    var length = this.responseLength;
-    var body = this.body;
-    var counter;
+    var length = ctx.responseLength
+    var body = ctx.body
+    var counter
     if (null == length && body && body.readable) {
-      this.body = body
+      ctx.body = body
         .pipe(counter = Counter())
-        .on('error', this.onerror);
+        .on('error', ctx.onerror)
     }
 
     // log when the response is finished or closed,
     // whichever happens first.
-    var ctx = this;
-    var res = this.res;
+    var res = ctx.res
 
-    var onfinish = done.bind(null, 'finish');
-    var onclose = done.bind(null, 'close');
+    var onfinish = done.bind(null, 'finish')
+    var onclose = done.bind(null, 'close')
 
-    res.once('finish', onfinish);
-    res.once('close', onclose);
+    res.once('finish', onfinish)
+    res.once('close', onclose)
 
     function done(event){
-      res.removeListener('finish', onfinish);
-      res.removeListener('close', onclose);
-      log(ctx, start, counter ? counter.length : length, null, event);
+      res.removeListener('finish', onfinish)
+      res.removeListener('close', onclose)
+      log(ctx, start, counter ? counter.length : length, null, event)
     }
   }
 }
@@ -124,9 +123,9 @@ function dev(opts) {
  */
 
 function time(start) {
-  var delta = new Date - start;
+  var delta = new Date - start
   delta = delta < 10000
     ? delta + 'ms'
-    : Math.round(delta / 1000) + 's';
-  return humanize(delta);
+    : Math.round(delta / 1000) + 's'
+  return humanize(delta)
 }

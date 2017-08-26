@@ -1,7 +1,6 @@
-
 # koa-mag
 
- Development style logger middleware for koa using [mag](https://github.com/mahnunchik/mag).
+Development style logger middleware for koa 2.x using [mag](https://github.com/mahnunchik/mag).
 
 ```
 <-- GET /
@@ -36,9 +35,8 @@ app.use(logger())
 
 ## Notes
 
-  Recommended that you `.use()` this middleware near the top
-  to "wrap" all subsequent middleware.
+Recommended that you `.use()` this middleware near the top to "wrap" all subsequent middleware.
 
 ## License
 
-  MIT
+MIT
